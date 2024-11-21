@@ -7,8 +7,10 @@
 import * as url from 'url';
 import * as querystring from 'querystring';
 import { load } from 'cheerio';
+import * as fs from 'fs'
 // import cheerio from 'cheerio';
 import moment from "moment";
+import path from 'path';
 
 
 function discoverLinks({ content, contentType, canonicalURL, requestURL }) {
@@ -72,7 +74,10 @@ function discoverLinks({ content, contentType, canonicalURL, requestURL }) {
 
 
 const testFunction = function () {
-    let content = require("fs").readFileSync(__dirname + "/../pdf/Sentencias_Penales_from__to__pageSize_10.json");
+    let currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const jsonFilePath = path.join(currentDir, '/../pdf/Sentencias_Penales_from__to__pageSize_10.json');
+    let content = fs.readFileSync(jsonFilePath, 'utf-8')
+    // let content = require("fs").readFileSync(__dirname + "/../pdf/Sentencias_Penales_from__to__pageSize_10.json");
     let contentType = "json";
     let canonicalURL = "https://juris.pjud.cl/busqueda?Buscador_Jurisprudencial_de_la_Corte_Suprema&from=2019-01-01&to=2019-12-31&pageSize=60&page=2";
     let requestURL = "" || canonicalURL;

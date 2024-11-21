@@ -1,12 +1,22 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+
+import moment from "moment";
+import { load } from "cheerio";
+import * as url from 'url';
+import * as querystring from 'querystring'
+import * as fs from 'fs'
+import path from "path";
+
+
+
 const sanitizeHtml = (x) => x;
 
-function parsePage({responseBody, URL}) {
+function parsePage({ responseBody, URL }) {
     const parser = new SecFilingParser(responseBody.content);
 
     // get all attachments that are tagged as Exhibit 10
@@ -24,7 +34,7 @@ function parsePage({responseBody, URL}) {
         ...document,                                       // properties we get from the document itself
         linkAnchor: mainDocumentLinks[document.filename],  // get the title through any link to it
         ...parser.header,                                  // and add up metadata from the filing
-    })).filter(doc=>doc.content);     // only return records with content
+    })).filter(doc => doc.content);     // only return records with content
 
     const externalLinks = Object.entries(mainDocumentLinks).filter(([link, anchor]) => link.indexOf("http") == 0);
 
@@ -76,7 +86,7 @@ class SecFilingParser {
         const content = this.getEnclosedTag('TEXT', rawDocument);
 
         // we use the links in the main document to find the proper text for the document
-        const $ = cheerio.load(content);
+        const $ = load(content);
         const linksPairs = Array.from($('a')).filter(el => $(el).attr("href")).map((el) => [$(el).attr('href').replace("http://", "https://"), $(el).text()]);
         const _$ = $("body").clone();
         // create a clone of body element to delete unwanted elements from, without affecting integrity of original body.
@@ -87,18 +97,18 @@ class SecFilingParser {
         _$.find("link\\:definition, link\\:usedOn").remove();
         // remove images from original body
         $("img").remove();
-        _$.find("[style*='color:white']").each(function(){
+        _$.find("[style*='color:white']").each(function () {
             $(this).css('color', 'dark gray');
         })
-        _$.find("[style*='font-size']").each(function(){
+        _$.find("[style*='font-size']").each(function () {
             let size = $(this).css('font-size');
             let newSize = "1em";
-            if(/pt/i.test(size)){
+            if (/pt/i.test(size)) {
                 let no = parseInt(size);
                 // if(no){
                 //   newSize = `${no/12}em`
                 // }
-                if(no<6)
+                if (no < 6)
                     $(this).remove();
             }
             // $(this).css('font-size', newSize);
@@ -153,7 +163,7 @@ class SecFilingParser {
         const entries = content.match(matcher);
 
         if (!entries) {
-            throw(new Error("Can't find tag " + tag + " in " + content));
+            throw (new Error("Can't find tag " + tag + " in " + content));
         }
 
         return entries.map(entry => {
@@ -221,17 +231,20 @@ class SecFilingDocumentParser {
 
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/../pdf/err.txt");
+    // const fs = require("fs");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, '/../pdf/err.txt');
+    let buffer = fs.readFileSync(filePath);
+    // let buffer = fs.readFileSync(__dirname + "/../pdf/err.txt");
     buffer = parsePage({
-        responseBody: {content: buffer.toString(), buffer, fileFormat: "text/plain"},
+        responseBody: { content: buffer.toString(), buffer, fileFormat: "text/plain" },
         URL: "",
         referer: "",
         html: null
     });
-    console.log(JSON.stringify(buffer.map(x=>{
-        let {linkAnchor, companyName, type} = x;
-        return {linkAnchor, companyName, type}
+    console.log(JSON.stringify(buffer.map(x => {
+        let { linkAnchor, companyName, type } = x;
+        return { linkAnchor, companyName, type }
     }), null, 4));
     console.log(buffer.length);
 };

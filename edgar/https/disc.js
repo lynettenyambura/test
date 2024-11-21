@@ -1,12 +1,20 @@
 "use strict";
 
-const url = require("url");
-const cheerio = require("cheerio");
-const querystring = require("querystring");
-const moment = require("moment");
+// const url = require("url");
+// const cheerio = require("cheerio");
+// const querystring = require("querystring");
+// const moment = require("moment");
+
+import * as url from 'url';
+import { load } from 'cheerio';
+import * as querystring from 'querystring';
+import * as fs from 'fs'
+import moment from 'moment';
+import path from 'path';
 
 
-function discoverLinks({content, contentType, canonicalURL, requestURL}) {
+
+function discoverLinks({ content, contentType, canonicalURL, requestURL }) {
     if (canonicalURL.indexOf("company") > 0) {
         return discoverLinksInCompanyIndexPage(content.toString()); // need to cast as string because it is received as a Buffer
     } else if (canonicalURL.indexOf(".txt") > 0) {
@@ -43,7 +51,7 @@ function discoverLinksInFilingPage(content, requestURL) {
     //
     // the logic here is simply: gather all links, filter only absolute links to the sec.gov and follow those
     const hrefs = [];
-    const $ = cheerio.load(content);
+    const $ = load(content);
 
     $("a[href]").each(function () {
         const href = $(this).attr("href");
@@ -75,7 +83,7 @@ function discoverLinksInDailyIndexPage(content) {
     // Daily index pages (https://www.sec.gov/Archives/edgar/daily-index/2024/QTR1/)
     // are just a simple HTML page that lists all the files under the folder
     const hrefs = [];
-    const $ = cheerio.load(content);
+    const $ = load(content);
 
     $("a[href]").each(function () {
         hrefs.push($(this).attr("href"));
@@ -100,13 +108,17 @@ function extractURLInRawLine(matchingLine) {
 
 
 const testFunction = function () {
-    let content = require("fs").readFileSync(__dirname + "/../pdf/miss.txt");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, '/../pdf/miss.txt');
+
+    let content = fs.readFileSync(filePath, 'utf-8')
+    // let content = require("fs").readFileSync(__dirname + "/../pdf/miss.txt");
     let contentType = "txt";
     // let canonicalURL = "https://www.sec.gov/Archives/edgar/data/814549/0001193125-24-082751.txt";
     let canonicalURL = "https://www.sec.gov/Archives/edgar/data/1037676/0001558370-24-001229.txt";
     let requestURL = "" || canonicalURL;
 
-    let links = discoverLinks({content, contentType, requestURL, canonicalURL});
+    let links = discoverLinks({ content, contentType, requestURL, canonicalURL });
     console.log(JSON.stringify(links, null, 4));
     console.log(links.length + " links discovered");
 };

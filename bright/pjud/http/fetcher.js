@@ -398,7 +398,9 @@ async function search({ canonicalURL, headers }) {
 
         } catch (e) {
             console.error("inner try catch", e);
-            let filename = __dirname + '/../pdf/error-' + moment().format("YYYY-MM-DD HH_mm_ss");
+            let currentDir = path.dirname(new URL(import.meta.url).pathname);
+            let filename = path.join(currentDir, '/../pdf/error-' + moment().format("YYYY-MM-DD HH_mm_ss"));
+            // let filename = __dirname + '/../pdf/error-' + moment().format("YYYY-MM-DD HH_mm_ss");
             // await page.screenshot({path: filename + '.png', fullPage: true});
             html = await page.evaluate(() => document.documentElement.outerHTML);
             // fs.writeFileSync(filename + '.html', html);
