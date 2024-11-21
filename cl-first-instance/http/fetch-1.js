@@ -11,16 +11,18 @@ import * as querystring from 'querystring'
 import FormData from 'form-data';
 import moment from 'moment';
 import * as url from 'url'
+import fs from 'fs'
 import { load } from 'cheerio';
 import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
 
-const fetcher = require("../../utils/fetcher");
-let fetchWithCookies = fetcher.fetchWithCookies;
+// const fetcher = require("../../utils/fetcher");
+import { defaultFetchURL, fetchWithCookies } from '../../utils/fetcher'; //include destructured {fetch} if needed, 
+// let fetchWithCookies = fetcher.fetchWithCookies;
 // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
-let defaultFetchURL = fetcher.defaultFetchURL;
+// let defaultFetchURL = fetcher.defaultFetchURL;
 
 
 let map = {};
@@ -108,7 +110,7 @@ const getYearMonths = async function ({ year, canonicalURL, headers }) {
     let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     setSharedVariable("got-year-months", true);
     let html = await responsePage.response.text();
-    const $ = cheerio.load(objStringToHtml(html) + "<div id='custom'><h3>Custom Links</h3><ol id='links'></ol></div>");
+    const $ = load(objStringToHtml(html) + "<div id='custom'><h3>Custom Links</h3><ol id='links'></ol></div>");
     let ol = $("#links");
     $("option").each(function (i) {
         let option = $(this);
@@ -158,7 +160,7 @@ const getMonthDaysWithDocuments = async function ({ year, month, canonicalURL, h
     let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     setSharedVariable("got-month-days", true);
     let html = await responsePage.response.text();
-    const $ = cheerio.load(objStringToHtml(html) + "<div id='custom'><h3>Custom Links</h3><ol id='links'></ol></div>");
+    const $ = load(objStringToHtml(html) + "<div id='custom'><h3>Custom Links</h3><ol id='links'></ol></div>");
     let ol = $("#links");
     let dates = [];
     $("option").each(function (i) {
@@ -212,7 +214,7 @@ const getDateCases = async function ({ date, canonicalURL, headers }) {
     let requestURL = 'https://www.pjud.cl/ajax/transparency/getinfodia';
     let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     let html = await responsePage.response.text();
-    const $ = cheerio.load(`<table>${objStringToHtml(html)}</table>`);
+    const $ = load(`<table>${objStringToHtml(html)}</table>`);
     $("tr").each(function (i) {
         let row = $(this);
         let cells = row.find("td");
@@ -259,6 +261,7 @@ const testCrawler = async function () {
         "https://www.pjud.cl/primera-instancia/fallos/?date=2023-09-20",
         "https://www.pjud.cl/primera-instancia/fallos/?date=2023-09-19"];
     let headers = { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15" };
+
     //const fs = require("fs");
     for (let i = 0; i < canonicalURLs.length; i++) {
         let canonicalURL = canonicalURLs[i];
