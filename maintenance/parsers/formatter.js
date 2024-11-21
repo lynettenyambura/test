@@ -1,7 +1,11 @@
 "use strict";
 //const fs = require("fs");
 import * as fs from "fs";
-
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+// directory name for __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let projectList = (fs.readFileSync(__dirname + "/../pdf/projects.txt").toString().toLowerCase()).split(/\s*[\n\s,]+\s*/g).filter((c, i, a) => {
     let f = c && a.indexOf(c) === i;

@@ -8,7 +8,9 @@
 import * as querystring from "querystring";
 import * as he from "he";
 import cheerio from "cheerio";
-import * as fs from "fs";
+import fs from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import mkdirp from "mkdirp";
 
 
@@ -173,6 +175,9 @@ const curlContentParser = function ({curlString, requestIndex, functionPrefix = 
     };`;
     return generatedCode;
 };
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const generateCode = function () {
 

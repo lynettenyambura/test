@@ -4,6 +4,13 @@
 // const cheerio = require("cheerio");
 import moment from "moment";
 import * as cheerio from "cheerio";
+import { readFileSync } from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 function parsePage({responseBody, URL}) {
     const $ = cheerio.load(responseBody.content);
     const results = [];
