@@ -1,6 +1,7 @@
 "use strict";
 
-const moment = require("moment");
+// const moment = require("moment");
+import moment from "moment";
 
 function getSeeds() {
     let start = moment();

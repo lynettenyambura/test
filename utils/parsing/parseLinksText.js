@@ -1,15 +1,23 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+
+import moment from "moment";
+import { load } from "cheerio";
+import url from 'url';
+import querystring from 'querystring';
+import fs from 'fs'
+import path from "path";
+
 const sanitizeHtml = (x) => x;
 
-function parsePage({responseBody, URL, html, referer}) {
-    console.log(`parsePage: parsing: ${responseBody.fileFormat} ${URL}`);
-    let lines = responseBody.content.toString().split(/\s*\n\s*/g).filter(l => /https?:.+\.pdf/i.test(l));
-    let urls = `{
+function parsePage({ responseBody, URL, html, referer }) {
+  console.log(`parsePage: parsing: ${responseBody.fileFormat} ${URL}`);
+  let lines = responseBody.content.toString().split(/\s*\n\s*/g).filter(l => /https?:.+\.pdf/i.test(l));
+  let urls = `{
   "data": {
     "viewer": {
       "records": {
@@ -145,26 +153,29 @@ function parsePage({responseBody, URL, html, referer}) {
     }
   }
 }`
-        .split(/\s*\n\s*/ig).map(x => x && x.trim().replace(/^[\W]+|[\W]+$/gi,''));
-    return urls.filter(x => x && /https/i.test(x));
-    // let filtered = urls.filter(u => true);
-    // return urls;
+    .split(/\s*\n\s*/ig).map(x => x && x.trim().replace(/^[\W]+|[\W]+$/gi, ''));
+  return urls.filter(x => x && /https/i.test(x));
+  // let filtered = urls.filter(u => true);
+  // return urls;
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/./pdf/links-text.txt");
-    buffer = parsePage({
-        responseBody: {content: buffer.toString(), buffer, fileFormat: "text/html"},
-        URL: "",
-        referer: "",
-        html: null
-    });
-    // console.log(JSON.stringify(buffer, null, 4));
-    for (let i = 0; i < buffer.length; i++) {
-        let l = buffer[i];
-        console.log(l);
-    }
-    console.log(buffer.length);
+  // const fs = require("fs");
+  const currentDir = path.dirname(new URL(import.meta.url).pathname);
+  const filePath = path.join(currentDir, "/./pdf/links-text.txt");
+  let buffer = fs.readFileSync(filePath)
+  // let buffer = fs.readFileSync(__dirname + "/./pdf/links-text.txt");
+  buffer = parsePage({
+    responseBody: { content: buffer.toString(), buffer, fileFormat: "text/html" },
+    URL: "",
+    referer: "",
+    html: null
+  });
+  // console.log(JSON.stringify(buffer, null, 4));
+  for (let i = 0; i < buffer.length; i++) {
+    let l = buffer[i];
+    console.log(l);
+  }
+  console.log(buffer.length);
 };
 parserTest();

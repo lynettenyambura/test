@@ -1,10 +1,17 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const puppeteer = require("puppeteer");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const puppeteer = require("puppeteer");
+
+import moment from "moment";
+import { load } from "cheerio";
+import puppeteer from "puppeteer";
+import url from 'url';
+
+
 const userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36";
-const url = require("url");
+// const url = require("url");
 let browser = null;
 
 

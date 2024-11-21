@@ -1,12 +1,19 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+
+import moment from "moment";
+import { load } from "cheerio";
+import url from 'url';
+import querystring from 'querystring';
+import fs from 'fs'
+
 const sanitizeHtml = (x) => x;
 
-function parsePage({responseBody, URL, html, referer}) {
+function parsePage({ responseBody, URL, html, referer }) {
     console.log(`parsePage: parsing: ${responseBody.fileFormat} ${URL}`);
     let j = JSON.parse(responseBody.content);
     j && j.data && j.data.viewer && j.data.viewer.records && j.data.viewer.records.edges && j.data.viewer.records.edges.forEach(e => {
@@ -18,10 +25,13 @@ function parsePage({responseBody, URL, html, referer}) {
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/./pdf/no-content.json");
+    // const fs = require("fs");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, '/./pdf/no-content.json');
+
+    let buffer = fs.readFileSync(filePath);
     buffer = parsePage({
-        responseBody: {content: buffer.toString(), buffer, fileFormat: "text/html"},
+        responseBody: { content: buffer.toString(), buffer, fileFormat: "text/html" },
         URL: "",
         referer: "",
         html: null

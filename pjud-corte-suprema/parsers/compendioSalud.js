@@ -1,16 +1,23 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+
+import moment from "moment";
+import { load } from "cheerio";
+import url from 'url';
+import querystring from 'querystring';
+import fs from 'fs'
+
 const sanitizeHtml = (x) => x;
 
-function parsePage({responseBody, URL, html, referer}) {
+function parsePage({ responseBody, URL, html, referer }) {
     console.log(`parsePage: parsing: ${responseBody.fileFormat} ${URL}`);
     const j = JSON.parse(responseBody.content);
     const results = j?.response?.docs?.map(d => {
-        const doc = {URI: [], title: null, date: null, ...d}
+        const doc = { URI: [], title: null, date: null, ...d }
         for (let f in doc) {
             if (/^text/i.test(f) && doc[f]) {
                 doc[f] = {
@@ -25,14 +32,18 @@ function parsePage({responseBody, URL, html, referer}) {
     }) || [];
 
 
-    return results.filter(d=>d.URI.length);
+    return results.filter(d => d.URI.length);
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/../pdf/compendio1.json");
+    // const fs = require("fs");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, "/../pdf/compendio1.json")
+
+
+    let buffer = fs.readFileSync(filePath);
     buffer = parsePage({
-        responseBody: {content: buffer.toString(), buffer, fileFormat: "text/html"},
+        responseBody: { content: buffer.toString(), buffer, fileFormat: "text/html" },
         URL: "https://juris.pjud.cl/busqueda?Compendio_de_Salud_Corte_de_Apelaciones&from=2013-01-01&to=2023-10-19",
         referer: "https://juris.pjud.cl/busqueda?Compendio_de_Salud_Corte_de_Apelaciones&from=2013-01-01&to=2023-10-19",
         html: null

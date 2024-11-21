@@ -1,11 +1,14 @@
 "use strict";
 
-const cheerio = require("cheerio");
-const fs = require("fs");
+// const cheerio = require("cheerio");
+// const fs = require("fs");
+
+import { load } from "cheerio";
+import fs from 'fs';
 
 const file = "../dp0166/pdf/form.html";
 
-const $ = cheerio.load(fs.readFileSync(file));
+const $ = load(fs.readFileSync(file));
 
 let query = "";
 let longs = {};

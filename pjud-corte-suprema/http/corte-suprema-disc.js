@@ -1,15 +1,22 @@
 "use strict";
 
-const url = require("url");
-const cheerio = require("cheerio");
-const querystring = require("querystring");
-const moment = require("moment");
+// const url = require("url");
+// const cheerio = require("cheerio");
+// const querystring = require("querystring");
+// const moment = require("moment");
+
+import url from 'url'
+import { load } from 'cheerio';
+import querystring from 'querystring'
+import moment from 'moment';
+import path from 'path';
+import fs from 'fs'
 
 
-function discoverLinks({content, contentType, canonicalURL, requestURL}) {
+function discoverLinks({ content, contentType, canonicalURL, requestURL }) {
     let links = [];
     if (/html/i.test(contentType)) {
-        const $ = cheerio.load(content);
+        const $ = load(content);
         $("a[href]").each(function () {
             let href = $(this).attr('href');
             href = href ? url.resolve(requestURL, href) : null;
@@ -39,15 +46,23 @@ function discoverLinks({content, contentType, canonicalURL, requestURL}) {
     return links;
 }
 
+const currentDir = path.dirname(new URL(import.meta.url).pathname);
+const filePath = path.join(currentDir, '/../pdf/miss.txt');
+
+let content = fs.readFileSync(filePath, 'utf-8')
+
 
 const testFunction = function () {
-    let content = require("fs").readFileSync(__dirname + "/../pdf/json.json");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, '/../pdf/json.json');
+    let content = fs.readFileSync(filePath, 'utf-8')
+    // let content = require("fs").readFileSync(__dirname + "/../pdf/json.json");
     let contentType = "json";
     // let canonicalURL = "https://juris.pjud.cl/busqueda?Buscador_Jurisprudencial_de_la_Corte_Suprema&date=2023-10-09";
     let canonicalURL = "https://juris.pjud.cl/busqueda?Compendio_de_Salud_Corte_de_Apelaciones&from=2013-01-01&to=2023-10-19";
     let requestURL = "" || canonicalURL;
 
-    let links = discoverLinks({content, contentType, requestURL, canonicalURL});
+    let links = discoverLinks({ content, contentType, requestURL, canonicalURL });
     console.log(JSON.stringify(links, null, 4));
     console.log(links.length + " links discovered");
 };
