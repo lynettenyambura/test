@@ -1,12 +1,20 @@
 "use strict";
 
-const url = require("url");
-const moment = require("moment");
-const querystring = require("querystring");
-const node_fetch_cookies = require('fetch-cookie')(require('node-fetch'));
-const node_fetch = require('node-fetch');
-const fs = require("fs");
-const cheerio = require("cheerio");
+// const url = require("url");
+// const moment = require("moment");
+// const querystring = require("querystring");
+// const node_fetch_cookies = require('fetch-cookie')(require('node-fetch'));
+// const node_fetch = require('node-fetch');
+// const fs = require("fs");
+// const cheerio = require("cheerio");
+
+import url from "url";
+import moment from "moment";
+import querystring from "querystring";
+import node_fetch_cookies from 'fetch-cookie';
+import node_fetch from 'node-fetch';
+import fs from "fs";
+import cheerio from "cheerio";
 
 
 //This file contains working versions of iceberg methods

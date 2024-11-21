@@ -1,10 +1,15 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
-const sanitizeHtml = (x) => x;
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+// const sanitizeHtml = (x) => x;
+import moment from "moment";
+import cheerio from "cheerio";
+import  url from "url";
+import queryString from 'query-string';
+import sanitizeHtml from 'sanitize-html';
 
 function parseXLSX({sharedStrings, sheet}) {
     let sharedStringsArray = parseSharedString(sharedStrings);
