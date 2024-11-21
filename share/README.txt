@@ -1,0 +1,2 @@
+To create a new project, duplicate the templates directory, and rename the copy with the appropriate project code eg dp001
+Where reading from or writing from files, ensure the necessary files and directories exist
