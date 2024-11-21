@@ -1,12 +1,22 @@
 "use strict";
 
-const url = require("url");
-const moment = require("moment");
-const querystring = require("querystring");
-const node_fetch = require('node-fetch');
-const fs = require("fs");
-const cheerio = require("cheerio");
-const node_fetch_cookies = require('fetch-cookie')(require('node-fetch'));
+// const url = require("url");
+// const moment = require("moment");
+// const querystring = require("querystring");
+// const node_fetch = require('node-fetch');
+// const fs = require("fs");
+// const cheerio = require("cheerio");
+// const node_fetch_cookies = require('fetch-cookie')(require('node-fetch'));
+
+import url from 'url';
+import moment from 'moment';
+import * as querystring from 'querystring';
+import node_fetch from 'node-fetch';
+import fs from 'fs';
+import { load } from 'cheerio';
+import fetchCookies from 'fetch-cookie';
+
+const node_fetch_cookies = fetchCookies(node_fetch)
 
 
 //This file contains working versions of iceberg methods
@@ -19,13 +29,13 @@ exports.fetch = async function (requestURL, requestOptions) {
     console.log("fetch --", requestURL);
     return await node_fetch(requestURL, requestOptions);
 };
-exports.defaultFetchURL = async function ({canonicalURL, headers}) {
+exports.defaultFetchURL = async function ({ canonicalURL, headers }) {
     console.log("defaultFetchURL --", canonicalURL);
-    let requestOptions = {method: "GET", headers};
+    let requestOptions = { method: "GET", headers };
     return [await node_fetch(canonicalURL, requestOptions).then(response => {
         return {
             canonicalURL,
-            request: Object.assign({URL: canonicalURL}, requestOptions),
+            request: Object.assign({ URL: canonicalURL }, requestOptions),
             response
         };
     })

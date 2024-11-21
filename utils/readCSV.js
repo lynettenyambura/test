@@ -1,12 +1,21 @@
 "use strict";
 
-const csv = require("csv-parse/sync");
-const fs = require("fs");
+// const csv = require("csv-parse/sync");
+// const fs = require("fs");
 
-let pathToCSV = __dirname + `/pdf/I06s73iee2hq9vz-preview.csv`;
+import { parse } from "csv-parse/sync";
+import fs from 'fs';
+import path from "path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+let pathToCSV = path.join(__dirname, 'pdf', 'I06s73iee2hq9vz-preview.csv')
+
+
+// let pathToCSV = __dirname + `/pdf/I06s73iee2hq9vz-preview.csv`;
 let icbgCsv = fs.readFileSync(pathToCSV);
 
-let values = csv.parse(icbgCsv, {
+let values = parse(icbgCsv, {
     columns: true,
     skip_empty_lines: true
 }).reduce((acc, x) => {
@@ -19,5 +28,8 @@ let values = csv.parse(icbgCsv, {
 values = Array.from(values).sort();
 // console.log(JSON.stringify(values, null, 4));
 
-fs.writeFileSync(__dirname + `/pdf/tribunales-de-origen.txt`, values.join("\n"))
+fs.writeFileSync(path.join(__dirname, 'pdf', 'tribunales-de-origen.txt'), values.join("\n"));
+
+
+// fs.writeFileSync(__dirname + `/pdf/tribunales-de-origen.txt`, values.join("\n"))
 

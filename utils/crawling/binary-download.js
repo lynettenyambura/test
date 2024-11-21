@@ -1,16 +1,25 @@
 "use strict";
 
-const querystring = require("querystring");
-const FormData = require("form-data");
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+// const querystring = require("querystring");
+// const FormData = require("form-data");
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+// const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
 
-const fetcher = require("../utils/fetcher");
-let fetchWithCookies = fetcher.fetchWithCookies;
+import querystring from 'querystring';
+import FormData from 'form-data';
+import moment from 'moment';
+import url from 'url';
+import { load } from 'cheerio';
+import fetch from 'node-fetch';
+
+import { fetchWithCookies, defaultFetchURL } from '../../utils/fetcher';
+
+// const fetcher = require("../utils/fetcher");
+// let fetchWithCookies = fetcher.fetchWithCookies;
 // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
-let defaultFetchURL = fetcher.defaultFetchURL;
+// let defaultFetchURL = fetcher.defaultFetchURL;
 
 
 function setSharedVariable(key, value) {
@@ -20,22 +29,22 @@ function getSharedVariable(key) {
 }
 
 
-async function fetchPage({canonicalURL, requestURL, requestOptions, headers}) {
-    if (!requestOptions) requestOptions = {method: "GET", headers};
+async function fetchPage({ canonicalURL, requestURL, requestOptions, headers }) {
+    if (!requestOptions) requestOptions = { method: "GET", headers };
     if (!canonicalURL) canonicalURL = requestURL;
     if (!requestURL) requestURL = canonicalURL;
     return await fetchWithCookies(requestURL, requestOptions)
         .then(response => {
             return {
                 canonicalURL,
-                request: Object.assign({URL: requestURL}, requestOptions),
+                request: Object.assign({ URL: requestURL }, requestOptions),
                 response
             };
         });
 }
 
-const binaryDownload = async function ({canonicalURL, requestURL, headers, requestOptions}) {
-    let responsePage = await fetchPage({canonicalURL, requestURL, headers, requestOptions});
+const binaryDownload = async function ({ canonicalURL, requestURL, headers, requestOptions }) {
+    let responsePage = await fetchPage({ canonicalURL, requestURL, headers, requestOptions });
     let type = responsePage.response.headers.get('content-type');
     if (/octet/i.test(type)) {
         let name = responsePage.response.headers.get('content-disposition');
@@ -74,19 +83,19 @@ const binaryDownload = async function ({canonicalURL, requestURL, headers, reque
     return responsePage;
 };
 
-async function fetchURL({canonicalURL, headers}) {
+async function fetchURL({ canonicalURL, headers }) {
     if (/https?:.*https?:/i.test(canonicalURL)) {
         console.error("Rejecting URL", canonicalURL, `returning [];`);
         return [];
     }
     let requestURL = null;
     if (/\.(pdf|docx?)\b/i.test(canonicalURL)) {
-        return [await binaryDownload({canonicalURL, headers})];
+        return [await binaryDownload({ canonicalURL, headers })];
     }
-    let responsePage = await fetchPage({canonicalURL, requestURL, headers});
+    let responsePage = await fetchPage({ canonicalURL, requestURL, headers });
     if (/html/i.test(responsePage.response.headers.get('content-type'))) {
         let html = await responsePage.response.text();
-        const $ = cheerio.load(html);
+        const $ = load(html);
         $("script, base, frame, frameset").remove();
         responsePage.response = new fetch.Response($.html(), responsePage.response);
     }

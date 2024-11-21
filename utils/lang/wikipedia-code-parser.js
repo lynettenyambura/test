@@ -1,11 +1,14 @@
 "use strict";
 
-const cheerio = require("cheerio");
-const axios = require("axios");
+// const cheerio = require("cheerio");
+// const axios = require("axios");
+
+import { load } from "cheerio";
+import axios from "axios";
 
 const runner = async function () {
     let res = await axios.get("https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes");
-    const $ = cheerio.load(res.data);
+    const $ = load(res.data);
     let table = $("#Table").first();
     let headers = {};
     table.find(">thead>tr, tbody>tr:has(th)").first().children().each(function (i) {
@@ -36,7 +39,7 @@ const runner = async function () {
             throw new Error("duplicate key " + (obj[row["639-1"]] || obj[row["639-2/T"]]));
         }
         obj[row["639-1"]] = row["ISO language name"];
-        obj[row["639-2/T"]] = row ["ISO language name"];
+        obj[row["639-2/T"]] = row["ISO language name"];
     });
     console.log(JSON.stringify(obj, null, 4));
 };

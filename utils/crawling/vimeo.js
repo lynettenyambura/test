@@ -1,17 +1,27 @@
 "use strict";
 
-const querystring = require("querystring");
-const FormData = require("form-data");
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+// const querystring = require("querystring");
+// const FormData = require("form-data");
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+// const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
 
-const fetcher = require("../utils/fetcher");
-const https = require("https");
-let fetchWithCookies = fetcher.fetchWithCookies;
+import querystring from 'querystring';
+import FormData from 'form-data';
+import moment from 'moment';
+import url from 'url';
+import { load } from 'cheerio';
+import fetch from 'node-fetch';
+import https from 'https';
+
+import { fetchWithCookies, defaultFetchURL } from '../../utils/fetcher';
+
+// const fetcher = require("../utils/fetcher");
+// const https = require("https");
+// let fetchWithCookies = fetcher.fetchWithCookies;
 // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
-let defaultFetchURL = fetcher.defaultFetchURL;
+// let defaultFetchURL = fetcher.defaultFetchURL;
 
 
 let map = {};
@@ -24,28 +34,28 @@ function getSharedVariable(key) {
     return map[key];
 }
 
-async function fetchPage({canonicalURL, requestURL, requestOptions, headers}) {
-    if (!requestOptions) requestOptions = {method: "GET", headers};
+async function fetchPage({ canonicalURL, requestURL, requestOptions, headers }) {
+    if (!requestOptions) requestOptions = { method: "GET", headers };
     if (!canonicalURL) canonicalURL = requestURL;
     if (!requestURL) requestURL = canonicalURL;
     if (requestURL.match(/^https/i)) {
-        requestOptions.agent = new https.Agent({rejectUnauthorized: false, keepAlive: true});
+        requestOptions.agent = new https.Agent({ rejectUnauthorized: false, keepAlive: true });
     }
     return await fetchWithCookies(requestURL, requestOptions)
         .then(response => {
             return {
                 canonicalURL,
-                request: Object.assign({URL: requestURL}, requestOptions),
+                request: Object.assign({ URL: requestURL }, requestOptions),
                 response
             };
         });
 }
 
 const getVimeoEmbedCode = async function ({
-                                              vimeoId,
-                                              canonicalURL,
-                                              headers = {'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15"}
-                                          }) {
+    vimeoId,
+    canonicalURL,
+    headers = { 'user-agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Safari/605.1.15" }
+}) {
     let customHeaders = {
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
@@ -63,10 +73,10 @@ const getVimeoEmbedCode = async function ({
     let _headers = Object.assign(customHeaders, headers);
 
     let method = "GET";
-    let requestOptions = {method, headers: _headers};
+    let requestOptions = { method, headers: _headers };
     let requestURL = `https://vimeo.com/embed?width=640&height=360&title=1&byline=1&badge=1&portrait=1&autoplay=0&loop=0&link=1&caption=0&color=00adef&responsive=0&fixed=1&clip_id=${vimeoId}&iframe=true`;
 
-    let responsePage = await fetchPage({canonicalURL: canonicalURL || requestURL, requestURL, requestOptions});
+    let responsePage = await fetchPage({ canonicalURL: canonicalURL || requestURL, requestURL, requestOptions });
     let html = await responsePage.response.text();
     responsePage.response = new fetch.Response(html, responsePage.response);
 
@@ -80,7 +90,7 @@ const getVimeoEmbedCode = async function ({
 
 const tester = async function () {
     let vimeoId = 672844590;
-    let resp = await getVimeoEmbedCode({vimeoId});
+    let resp = await getVimeoEmbedCode({ vimeoId });
     console.log(resp.toString());
 
 };

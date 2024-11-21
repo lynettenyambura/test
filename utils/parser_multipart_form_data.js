@@ -1,12 +1,18 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
-const fs = require("fs");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+// const fs = require("fs");
 
-function parsePage({responseBody, URL}) {
+import moment from "moment";
+import { load } from "cheerio";
+import url from 'url';
+import querystring from 'querystring';
+import fs from 'fs'
+
+function parsePage({ responseBody, URL }) {
     const text = responseBody.content.toString();
     let boundary = "-{20,}\\d{5,}[-]*";
     // let boundary = "---------------------------4103961533101648661712293079";
@@ -36,9 +42,13 @@ function parsePage({responseBody, URL}) {
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/./pdf/ddd.txt");
-    buffer = parsePage({responseBody: {content: buffer}, URL: ""});
+    // const fs = require("fs");
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+    const filePath = path.join(currentDir, "/./pdf/ddd.txt");
+    let buffer = fs.readFileSync(filePath)
+
+    // let buffer = fs.readFileSync(__dirname + "/./pdf/ddd.txt");
+    buffer = parsePage({ responseBody: { content: buffer }, URL: "" });
     console.log(JSON.stringify(buffer, null, 4));
     console.log(buffer.length);
 };

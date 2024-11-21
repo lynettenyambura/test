@@ -1,16 +1,25 @@
 "use strict";
 
-const querystring = require("querystring");
-const FormData = require("form-data");
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+// const querystring = require("querystring");
+// const FormData = require("form-data");
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+// const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
 
-const fetcher = require("../../utils/fetcher");
-let fetchWithCookies = fetcher.fetchWithCookies;
+import querystring from 'querystring';
+import FormData from 'form-data';
+import moment from 'moment';
+import url from 'url';
+import { load } from 'cheerio';
+import fetch from 'node-fetch';
+
+import { fetchWithCookies, defaultFetchURL } from '../../utils/fetcher';
+
+// const fetcher = require("../../utils/fetcher");
+// let fetchWithCookies = fetcher.fetchWithCookies;
 // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
-let defaultFetchURL = fetcher.defaultFetchURL;
+// let defaultFetchURL = fetcher.defaultFetchURL;
 
 
 function setSharedVariable(key, value) {
@@ -20,25 +29,25 @@ function getSharedVariable(key) {
 }
 
 
-async function fetchPage({canonicalURL, requestURL, requestOptions, headers}) {
-    if (!requestOptions) requestOptions = {method: "GET", headers};
+async function fetchPage({ canonicalURL, requestURL, requestOptions, headers }) {
+    if (!requestOptions) requestOptions = { method: "GET", headers };
     if (!canonicalURL) canonicalURL = requestURL;
     if (!requestURL) requestURL = canonicalURL;
     if (requestURL.match(/^https/i)) {
-        requestOptions.agent = new https.Agent({rejectUnauthorized: false});
+        requestOptions.agent = new https.Agent({ rejectUnauthorized: false });
         console.log("using a custom agent");
     }
     return await fetch(requestURL, requestOptions)
         .then(response => {
             return {
                 canonicalURL,
-                request: Object.assign({URL: requestURL}, requestOptions),
+                request: Object.assign({ URL: requestURL }, requestOptions),
                 response
             };
         });
 }
 
-async function fetchURL({canonicalURL, headers}) {
+async function fetchURL({ canonicalURL, headers }) {
     if (/https?:.*https?:/i.test(canonicalURL)) {
         console.error("Rejecting URL", canonicalURL, `returning [];`);
         return [];
@@ -48,5 +57,5 @@ async function fetchURL({canonicalURL, headers}) {
         let connector = /\?/i.test(canonicalURL) ? "&" : "?";
         requestURL = canonicalURL + connector + "iframe=true";
     }
-    return [await fetchPage({canonicalURL, requestURL, headers})];
+    return [await fetchPage({ canonicalURL, requestURL, headers })];
 }

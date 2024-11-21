@@ -1,9 +1,12 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
 
-async function parsePage({URL, responseBody, html}) {
+import moment from "moment";
+import { load } from "cheerio";
+
+async function parsePage({ URL, responseBody, html }) {
     if (!/pdf/i.test(responseBody.fileFormat)) {
         console.error("Error: File is NOT valid PDF " + URL);
         return [];
@@ -19,28 +22,29 @@ async function parsePage({URL, responseBody, html}) {
         locale, dataType
     }];
 
-    if(!html){
-        try{
-            html = await runRemoteFilter({URL, filter: "pdf2htmlEx"});
-        }catch(e){
+    if (!html) {
+        try {
+            html = await runRemoteFilter({ URL, filter: "pdf2htmlEx" });
+        } catch (e) {
             console.error("PDF transcoding failed", e);
         }
     }
     if (html) {
         // const $ = cheerio.load(html);
+        // const $ = load(html)
         // if ($.text().trim().length > 20)
-        out.htmlContent = {fileFormat: "text/html", content: html, locale, dataType};
+        out.htmlContent = { fileFormat: "text/html", content: html, locale, dataType };
     } else {
         out.htmlContent = null;
         out.text = null;
     }
-    let text = await runRemoteFilter({URL, filter: "pdftotext_raw"});
-    out.text = text && text.trim() && {content: text, locale, fileFormat: "text/plain", dataType} || null;
+    let text = await runRemoteFilter({ URL, filter: "pdftotext_raw" });
+    out.text = text && text.trim() && { content: text, locale, fileFormat: "text/plain", dataType } || null;
 
     return [out];
 }
 
-const runRemoteFilter = async function ({URL, id, filter}) {
+const runRemoteFilter = async function ({ URL, id, filter }) {
     let textContent = "";
     const URLId = URL && "H" + new Buffer(URL).toString("base64");
     const URLIdN = URL && "H" + sha256(URL) + ".N";
