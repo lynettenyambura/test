@@ -1,9 +1,14 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-const url = require("url");
-const querystring = require("querystring");
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+// const url = require("url");
+// const querystring = require("querystring");
+import moment from "moment";
+import cheerio from "cheerio";
+import * as url from "url";
+import * as querystring from "querystring";
+
 
 function parsePage({responseBody, URL, html, referer}) {
     const $ = cheerio.load(responseBody.content, {decodeEntities: true});

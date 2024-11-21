@@ -1,6 +1,8 @@
 "use strict";
 
-const fs = require("fs");
+//const fs = require("fs");
+import * as fs from "fs";
+
 
 let lines = fs.readFileSync("./check_dups.txt").toString().split(/\s*\n\s*/g).filter(c => c);
 let repeated = lines.filter((c, i, a) => a.indexOf(c) !== i);

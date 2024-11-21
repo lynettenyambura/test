@@ -1,11 +1,18 @@
 "use strict";
 
-const querystring = require("querystring");
-const FormData = require("form-data");
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+// const querystring = require("querystring");
+// const FormData = require("form-data");
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+// const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+import * as querystring from "querystring";
+import FormData from "form-data";
+import moment from "moment";
+import * as url from "url";
+import cheerio from "cheerio";
+import fetch from "node-fetch";
+
 
 const fetcher = require("../../utils/fetcher");
 let fetchWithCookies = fetcher.fetchWithCookies;

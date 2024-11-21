@@ -1,11 +1,16 @@
 "use strict";
 
-const querystring = require("querystring");
+// const querystring = require("querystring");
 
 
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+import * as querystring from "querystring";
+import moment from "moment";
+import * as url from "url";
+import * as cheerio from "cheerio";
+
 
 function setSharedVariable(key, value) {
     ma[key] = value;
