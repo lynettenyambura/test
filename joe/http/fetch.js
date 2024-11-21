@@ -6,10 +6,10 @@
 // const url = require('url');
 // const cheerio = require('cheerio');
 // const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
-import * as querystring from "querystring";
+import querystring from "querystring";
 import FormData from "form-data";
 import moment from "moment";
-import * as url from "url";
+import url from "url";
 import cheerio from "cheerio";
 import fetch from "node-fetch";
 

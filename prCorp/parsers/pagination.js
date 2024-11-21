@@ -3,13 +3,14 @@
 // const moment = require("moment");
 // const cheerio = require("cheerio");
 import moment from "moment";
-import * as cheerio from "cheerio";
-import { readFileSync } from 'fs';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import  cheerio from "cheerio";
+import fs from 'fs';
+import path from 'path';
+// import { dirname } from 'path';
+// import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 function parsePage({responseBody, URL}) {
     const $ = cheerio.load(responseBody.content);
@@ -25,8 +26,13 @@ function parsePage({responseBody, URL}) {
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-    let buffer = fs.readFileSync(__dirname + "/../pdf/res.html");
+    //const fs = require("fs");
+    // Get the directory of the current module
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+
+    // Construct the path to the "projects.txt" file
+    const filePath = path.join(currentDir, "/../pdf/res.html");
+    let buffer = fs.readFileSync(filePath);
     buffer = parsePage({responseBody: {content: buffer}, URL: "http://res.res/"});
     console.log(JSON.stringify(buffer, null, 4));
     console.log(buffer.length);

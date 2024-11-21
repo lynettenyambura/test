@@ -5,12 +5,13 @@
 // const cheerio = require("cheerio");
 // const fs = require("fs");
 // const mkdirp = require("mkdirp");
-import * as querystring from "querystring";
-import * as he from "he";
+import querystring from "querystring";
+import he from "he";
 import cheerio from "cheerio";
 import fs from 'fs';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path';
+// import { dirname } from 'path';
+// import { fileURLToPath } from 'url';
 import mkdirp from "mkdirp";
 
 
@@ -27,21 +28,21 @@ import mkdirp from "mkdirp";
  *
  * */
 
-async function fetchPage({canonicalURL, requestURL, requestOptions, headers}) {
-    if (!requestOptions) requestOptions = {method: "GET", headers};
+async function fetchPage({ canonicalURL, requestURL, requestOptions, headers }) {
+    if (!requestOptions) requestOptions = { method: "GET", headers };
     if (!canonicalURL) canonicalURL = requestURL;
     if (!requestURL) requestURL = canonicalURL;
     return await fetchWithCookies(requestURL, requestOptions)
         .then(response => {
             return {
                 canonicalURL,
-                request: Object.assign({URL: requestURL}, requestOptions),
+                request: Object.assign({ URL: requestURL }, requestOptions),
                 response
             };
         });
 }
 
-async function fetchURL({canonicalURL, headers}) {
+async function fetchURL({ canonicalURL, headers }) {
     if (/https?:.*https?:/i.test(canonicalURL)) {
         console.error("Rejecting URL", canonicalURL, `returning [];`);
         return [];
@@ -51,9 +52,9 @@ async function fetchURL({canonicalURL, headers}) {
         let from = moment(match[2]);
         let to = moment(match[4]);
         let page = match[6] ? parseInt(match[6]) : 1;
-        return [await fetchURL({canonicalURL, headers})]
+        return [await fetchURL({ canonicalURL, headers })]
     } else {
-        return defaultFetchURL({canonicalURL, headers});
+        return defaultFetchURL({ canonicalURL, headers });
     }
 }
 
@@ -65,7 +66,7 @@ const parseForm = function (curlString) {
     if (isJSON) {
         let content = JSON.parse(data[1].trim());
         // throw(JSON.stringify(content, null, 4))
-        return {method, string: `let data = ${JSON.stringify(content, null, 4)};\nlet body = JSON.stringify(data);`};
+        return { method, string: `let data = ${JSON.stringify(content, null, 4)};\nlet body = JSON.stringify(data);` };
     }
     data = (data && data[1] || "").split("&");
     let form = {};
@@ -95,7 +96,7 @@ const parseForm = function (curlString) {
         field && (string += `\ndata["${field}"] = \`${form[field]}\`;`)
     }
     string += `\nlet body = querystring.stringify(data);`;
-    return {method, string};
+    return { method, string };
 };
 
 function parseFormData(curlString) {
@@ -125,10 +126,10 @@ function parseFormData(curlString) {
         formDataString += `\nbody.append('${x[0]}', '${x[1]}');`
     });
 
-    return {method: "POST", string: formDataString};
+    return { method: "POST", string: formDataString };
 }
 
-const curlContentParser = function ({curlString, requestIndex, functionPrefix = "method"}) {
+const curlContentParser = function ({ curlString, requestIndex, functionPrefix = "method" }) {
     //url
     let requestURL = curlString.match(/curl\s+\$?['"]([^\s]+)['"]/i)[1];
     let method = "GET";
@@ -161,7 +162,7 @@ const curlContentParser = function ({curlString, requestIndex, functionPrefix = 
         let x = parseForm(curlString);
         [method, string] = [x.method, x.string];
     } else if (/--data/i.test(curlString))
-        throw(`UnKnown data-type: ${/--data[\w-]+/i.exec(curlString)}`);
+        throw (`UnKnown data-type: ${/--data[\w-]+/i.exec(curlString)}`);
     let fctName = functionPrefix || "function";
     let generatedCode = `\n\n\nconst ${fctName}${requestIndex} = async function ({argument, canonicalURL, headers}) {
         let customHeaders = ${JSON.stringify(customHeaders, null, 4).split(/\n/g).map((l, i) => i ? '\t\t' + l : l).join("\n")};
@@ -176,13 +177,19 @@ const curlContentParser = function ({curlString, requestIndex, functionPrefix = 
     return generatedCode;
 };
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+// Get the directory of the current module
+const currentDir = path.dirname(new URL(import.meta.url).pathname);
+
+// Construct the path to the "projects.txt" file
+const filePath = path.join(currentDir,  "/./pdf/dp16632.txt");
 
 const generateCode = function () {
 
-    let FILE = __dirname + "/./pdf/dp16632.txt"; //set this to target file, with curl requests each on a new line
-   let createCrawlerFileOverwriteIfExists = false;
+    let FILE = filePath; //set this to target file, with curl requests each on a new line
+    let createCrawlerFileOverwriteIfExists = false;
     createCrawlerFileOverwriteIfExists = true;//create and overwrite existing /http/fetch.js file in the project directory
 
     let contents = fs.readFileSync(FILE);
@@ -210,7 +217,7 @@ const generateCode = function () {
         if (!/^\s*curl\s+/i.test(ln))
             generatedCode += `\n\n\n/*\n${ln}\n*/`;
         else
-            generatedCode += "\n\n" + curlContentParser({curlString: ln, requestIndex: codeIndex++})
+            generatedCode += "\n\n" + curlContentParser({ curlString: ln, requestIndex: codeIndex++ })
     });
     generatedCode += "\n\n" + fetchURL.toString();
     console.log(JSON.stringify(contents, null, 4));
@@ -219,9 +226,11 @@ const generateCode = function () {
     if (createCrawlerFileOverwriteIfExists) {
         let name = FILE.match(/[^\/\\]+$/)[0];
         name = name.replace(/\..{2,4}$/, "");
-        let dir = __dirname + "/../" + name + "/http/";
+        //let dir = __dirname + "/../" + name + "/http/";
+        const dir = path.resolve(path.dirname(import.meta.url), "..", name, "http");
         mkdirp.sync(dir);
-        fs.writeFileSync(dir + 'fetch.js', generatedCode);
+        //fs.writeFileSync(dir + 'fetch.js', generatedCode);
+        fs.writeFileSync(path.join(dir, 'fetch.js'), generatedCode);
     }
 };
 
