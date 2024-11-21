@@ -1,0 +1,42 @@
+{
+  "name": "vlex-iceberg",
+  "version": "0.0.1",
+  "dependencies": {
+    "axios": "latest",
+    "chalk": "latest",
+    "cheerio": "latest",
+    "colors": "latest",
+    "csv": "latest",
+    "csv-generate": "^4.0.3",
+    "csv-parse": "^5.3.0",
+    "csv-stringify": "^6.0.4",
+    "csv-writer": "latest",
+    "dom-parser": "^0.1.6",
+    "fetch-cookie": "latest",
+    "form-data": "latest",
+    "he": "latest",
+    "i18n-iso-countries": "^7.5.0",
+    "iconv-lite": "latest",
+    "mkdirp": "latest",
+    "moment": "latest",
+    "ngeohash": "latest",
+    "node-fetch": "latest",
+    "parse5": "^6.0.1",
+    "playwright": "latest",
+    "puppeteer": "latest",
+    "puppeteer-core": "^19.6.3",
+    "querystring": "latest",
+    "request": "latest",
+    "request-promise": "latest",
+    "sanitize-html": "latest",
+    "url": "latest",
+    "winston": "latest",
+    "xmldom": "^0.6.0",
+    "xmlserializer": "^0.6.1",
+    "xpath": "0.0.32"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.27.1"
+  },
+  "scripts": {}
+}
