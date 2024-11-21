@@ -8,6 +8,9 @@ import moment from "moment";
 import cheerio from "cheerio";
 import * as url from "url";
 import * as querystring from "querystring";
+import fs from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 
 function parsePage({responseBody, URL, html, referer}) {
@@ -25,9 +28,11 @@ function parsePage({responseBody, URL, html, referer}) {
 }
 
 const parserTest = function () {
-    const fs = require("fs");
-
+    //const fs = require("fs");
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
     let buffer = fs.readFileSync(__dirname + "/../pdf/d.html");
+    
     buffer = parsePage({
         responseBody: {content: buffer, buffer, fileFormat: "text/html"},
         URL: "",
