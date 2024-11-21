@@ -14,6 +14,9 @@ import * as url from 'url'
 import fs from 'fs'
 import { load } from 'cheerio';
 import fetch from 'node-fetch';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
 
 // const fetcher = require("../../utils/fetcher");
 import { defaultFetchURL, fetchWithCookies } from '../../utils/fetcher'; //include destructured {fetch} if needed, 
@@ -258,7 +261,8 @@ const testCrawler = async function () {
         "https://www.pjud.cl/primera-instancia/fallos/?date=2023-09-20",
         "https://www.pjud.cl/primera-instancia/fallos/?date=2023-09-19"];
     let headers = { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15" };
-    // const fs = require("fs");
+
+    //const fs = require("fs");
     for (let i = 0; i < canonicalURLs.length; i++) {
         let canonicalURL = canonicalURLs[i];
         let responses = await fetchURL({ canonicalURL, headers });
@@ -267,7 +271,14 @@ const testCrawler = async function () {
             let fileName = responsePage.canonicalURL.replace(/.+[\/?]([^?\/]+)$/i, "$1").replace(/\W/ig, "_");
             let type = responsePage.response.headers.get('content-type');
             let ext = /json/i.test(type) ? "json" : /pdf/i.test(type) ? "pdf" : /\.openxmlformats.*word/i.test(type) ? "docx" : /word/i.test(type) ? "doc" : "html";
-            let filePath = `${__dirname}/../pdf/${fileName}.${ext}`;
+            //let filePath = `${__dirname}/../pdf/${fileName}.${ext}`;
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+
+            // Construct the file path
+            let filePath = join(__dirname, '..', 'pdf', `${fileName}.${ext}`);
+
+            console.log(filePath);
             let html = await responsePage.response.buffer();
             fs.writeFileSync(filePath, html);
             console.log(`saved file to ${filePath}`);
