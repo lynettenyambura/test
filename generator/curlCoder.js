@@ -1,10 +1,16 @@
 "use strict";
 
-const querystring = require("querystring");
-const he = require("he");
-const cheerio = require("cheerio");
-const fs = require("fs");
-const mkdirp = require("mkdirp");
+// const querystring = require("querystring");
+// const he = require("he");
+// const cheerio = require("cheerio");
+// const fs = require("fs");
+// const mkdirp = require("mkdirp");
+import * as querystring from "querystring";
+import * as he from "he";
+import cheerio from "cheerio";
+import * as fs from "fs";
+import mkdirp from "mkdirp";
+
 
 /**
  * Please do not save changes you make to this file to Git. Unless intentionally updating it's contents.

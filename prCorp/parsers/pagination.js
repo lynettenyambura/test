@@ -1,8 +1,9 @@
 "use strict";
 
-const moment = require("moment");
-const cheerio = require("cheerio");
-
+// const moment = require("moment");
+// const cheerio = require("cheerio");
+import moment from "moment";
+import * as cheerio from "cheerio";
 function parsePage({responseBody, URL}) {
     const $ = cheerio.load(responseBody.content);
     const results = [];

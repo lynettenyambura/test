@@ -1,5 +1,7 @@
 "use strict";
-const fs = require("fs");
+//const fs = require("fs");
+import * as fs from "fs";
+
 
 let projectList = (fs.readFileSync(__dirname + "/../pdf/projects.txt").toString().toLowerCase()).split(/\s*[\n\s,]+\s*/g).filter((c, i, a) => {
     let f = c && a.indexOf(c) === i;
