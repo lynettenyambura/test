@@ -25,11 +25,17 @@ const node_fetch_cookies = fetchCookies(node_fetch)
 //Ensure all the modules are installed in your environment
 
 
-exports.fetch = async function (requestURL, requestOptions) {
+// exports.fetch = async function (requestURL, requestOptions) {
+//     console.log("fetch --", requestURL);
+//     return await node_fetch(requestURL, requestOptions);
+// };
+
+export const fetch = async function (requestURL, requestOptions) {
     console.log("fetch --", requestURL);
-    return await node_fetch(requestURL, requestOptions);
-};
-exports.defaultFetchURL = async function ({ canonicalURL, headers }) {
+    return await node_fetch(requestURL, requestOptions)
+}
+
+export const defaultFetchURL = async function ({ canonicalURL, headers }) {
     console.log("defaultFetchURL --", canonicalURL);
     let requestOptions = { method: "GET", headers };
     return [await node_fetch(canonicalURL, requestOptions).then(response => {
@@ -41,7 +47,7 @@ exports.defaultFetchURL = async function ({ canonicalURL, headers }) {
     })
     ]
 };
-exports.fetchWithCookies = async function (requestURL, requestOptions) {
+export const fetchWithCookies = async function (requestURL, requestOptions) {
     console.log("fetchWithCookies --", requestURL);
     return await node_fetch_cookies(requestURL, requestOptions);
 };
