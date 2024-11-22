@@ -1,17 +1,26 @@
 "use strict";
 
-const querystring = require("querystring");
-const FormData = require("form-data");
-const moment = require('moment');
-const url = require('url');
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
-const puppeteerManager = require("../../utils/PuppeteerManager")
+// const querystring = require("querystring");
+// const FormData = require("form-data");
+// const moment = require('moment');
+// const url = require('url');
+// const cheerio = require('cheerio');
+// const fetch = require('node-fetch');//to reconstruct response fetch.Response(html,....)
+// const puppeteerManager = require("../../utils/PuppeteerManager")
 
-const fetcher = require("../../utils/fetcher");
-let fetchWithCookies = fetcher.fetchWithCookies;
-// let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
-let defaultFetchURL = fetcher.defaultFetchURL;
+import querystring from 'querystring';
+import FormData from 'form-data';
+import moment from 'moment';
+import url from 'url';
+import { load } from 'cheerio';
+import fetch from 'node-fetch';
+import { newPage, getBrowser } from '../../utils/crawling/PuppeteerManager.js';
+
+// const fetcher = require("../../utils/fetcher");
+import { fetchWithCookies, defaultFetchURL } from '../../utils/fetcher.js'
+// let fetchWithCookies = fetcher.fetchWithCookies;
+// // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
+// let defaultFetchURL = fetcher.defaultFetchURL;
 
 
 let map = {};
@@ -25,7 +34,7 @@ function getSharedVariable(key) {
 }
 
 
-const home = async function ({headers}) {
+const home = async function ({ headers }) {
     let customHeaders = {
         "authority": "www.tca.gub.uy",
         "pragma": "no-cache",
@@ -40,13 +49,13 @@ const home = async function ({headers}) {
     let _headers = Object.assign(customHeaders, headers);
 
     let method = "GET";
-    let requestOptions = {method, headers: _headers};
+    let requestOptions = { method, headers: _headers };
     let requestURL = 'https://www.tca.gub.uy/fallos-de-interes/';
-    let responsePage = await fetchPage({canonicalURL: requestURL, requestOptions});
-    return [responsePage, await form({headers})];
+    let responsePage = await fetchPage({ canonicalURL: requestURL, requestOptions });
+    return [responsePage, await form({ headers })];
 };
 
-const form = async function ({headers}) {
+const form = async function ({ headers }) {
     let customHeaders = {
         "authority": "www.tca.gub.uy",
         "pragma": "no-cache",
@@ -62,16 +71,16 @@ const form = async function ({headers}) {
     let _headers = Object.assign(customHeaders, headers);
 
     let method = "GET";
-    let requestOptions = {method, headers: _headers};
+    let requestOptions = { method, headers: _headers };
     let requestURL = 'https://www.tca.gub.uy/tcawww/servlet/fallos/fallointereses';
-    let responsePage = await fetchPage({canonicalURL: requestURL, requestOptions});
-    await parseForm({responsePage});
+    let responsePage = await fetchPage({ canonicalURL: requestURL, requestOptions });
+    await parseForm({ responsePage });
     return responsePage;
 };
 
-const parseForm = async function ({responsePage}) {
+const parseForm = async function ({ responsePage }) {
     let html = await responsePage.response.text();
-    const $ = cheerio.load(html, {decodeEntities: false});
+    const $ = load(html, { decodeEntities: false });
     const form = {};
     let state = null;
     $("form").find("input, textarea, select").toArray().forEach((input, index) => {
@@ -117,8 +126,8 @@ const parseForm = async function ({responsePage}) {
     responsePage.response = new fetch.Response(html, responsePage.response);
 };
 
-const search = async function ({fromYear, toYear, canonicalURL, headers}) {
-    let preds = await home({headers});
+const search = async function ({ fromYear, toYear, canonicalURL, headers }) {
+    let preds = await home({ headers });
     let customHeaders = {
         "authority": "www.tca.gub.uy",
         "pragma": "no-cache",
@@ -142,9 +151,9 @@ const search = async function ({fromYear, toYear, canonicalURL, headers}) {
     data["FILTRAR"] = `CONSULTAR`;
     let body = querystring.stringify(data);
     let method = "POST";
-    let requestOptions = {method, body, headers: _headers};
+    let requestOptions = { method, body, headers: _headers };
     let requestURL = 'https://www.tca.gub.uy/tcawww/servlet/fallos/fallointereses'//?f274870b49a0611afc82ae779a7c7e66,gx-no-cache=1611655095383';
-    let responsePage = await fetchPage({canonicalURL, requestURL, requestOptions});
+    let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     return [responsePage, ...preds];
 };
 
@@ -154,7 +163,7 @@ doc
 */
 
 
-const method3 = async function ({argument, canonicalURL, headers}) {
+const method3 = async function ({ argument, canonicalURL, headers }) {
     let customHeaders = {
         "authority": "www.tca.gub.uy",
         "pragma": "no-cache",
@@ -175,14 +184,14 @@ const method3 = async function ({argument, canonicalURL, headers}) {
     const data = {};
     let body = querystring.stringify(data);
     let method = "POST";
-    let requestOptions = {method, body, headers: _headers};
+    let requestOptions = { method, body, headers: _headers };
     let requestURL = 'https://www.tca.gub.uy/tcawww/servlet/fallos/fallointereses'//?f274870b49a0611afc82ae779a7c7e66,gx-no-cache=1611655280367';
-    let responsePage = await fetchPage({canonicalURL, requestURL, requestOptions});
+    let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     return responsePage;
 };
 
 
-const method4 = async function ({argument, canonicalURL, headers}) {
+const method4 = async function ({ argument, canonicalURL, headers }) {
     let customHeaders = {
         "authority": "www.tca.gub.uy",
         "pragma": "no-cache",
@@ -199,29 +208,29 @@ const method4 = async function ({argument, canonicalURL, headers}) {
     let _headers = Object.assign(customHeaders, headers);
 
     let method = "GET";
-    let requestOptions = {method, headers: _headers};
+    let requestOptions = { method, headers: _headers };
     let requestURL = 'https://www.tca.gub.uy/tcawww/PublicTempStorage/503-2020e6b372a6-4184-4bca-82a8-bcebcc785576.pdf?_blank';
-    let responsePage = await fetchPage({canonicalURL, requestURL, requestOptions});
+    let responsePage = await fetchPage({ canonicalURL, requestURL, requestOptions });
     return responsePage;
 };
 
 
-async function fetchPage({canonicalURL, requestURL, requestOptions, headers}) {
-    if (!requestOptions) requestOptions = {method: "GET", headers};
+async function fetchPage({ canonicalURL, requestURL, requestOptions, headers }) {
+    if (!requestOptions) requestOptions = { method: "GET", headers };
     if (!canonicalURL) canonicalURL = requestURL;
     if (!requestURL) requestURL = canonicalURL;
     return await fetchWithCookies(requestURL, requestOptions)
         .then(response => {
             return {
                 canonicalURL,
-                request: Object.assign({URL: requestURL}, requestOptions),
+                request: Object.assign({ URL: requestURL }, requestOptions),
                 response
             };
         });
 }
 
-const puppeteerSearch = async function ({fromYear, toYear, canonicalURL, headers, returnPage = false}) {
-    let page = await puppeteerManager.newPage();
+const puppeteerSearch = async function ({ fromYear, toYear, canonicalURL, headers, returnPage = false }) {
+    let page = await newPage();
     await page.goto("https://www.tca.gub.uy/tcawww/servlet/fallos/fallointereses", {
         waitUntil: 'networkidle2',
         timeout: 120000
@@ -231,12 +240,12 @@ const puppeteerSearch = async function ({fromYear, toYear, canonicalURL, headers
     await page.waitForSelector('#vANOHASTAF');
     await page.$eval('#vANOHASTAF', (el, endYear) => el.value = `${endYear}`, toYear);
     await page.click("#FILTRAR");
-    await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 15000}).catch(e => {
+    await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(e => {
         // console.error('Network IDLE did not happen');
     });
     if (returnPage) return page;
     let html = await page.content();
-    const $ = cheerio.load(html, {decodeEntities: false});
+    const $ = load(html, { decodeEntities: false });
     $('[data-gx-evt-control] a').each(function (i) {
         let a = $(this);
         let docTitle = a.text().replace(/\s+/g, " ").trim();
@@ -250,8 +259,8 @@ const puppeteerSearch = async function ({fromYear, toYear, canonicalURL, headers
     });
 };
 
-const clickDocument = async function ({fromYear, toYear, documentTitle, canonicalURL, headers}) {
-    let page = await puppeteerSearch({fromYear, toYear, canonicalURL, headers, returnPage: true});
+const clickDocument = async function ({ fromYear, toYear, documentTitle, canonicalURL, headers }) {
+    let page = await puppeteerSearch({ fromYear, toYear, canonicalURL, headers, returnPage: true });
     //search for link with the said title
     console.log(`Clicking document ${documentTitle}`);
     let xPath = `//a[contains(text(), '${documentTitle}')]`;
@@ -274,16 +283,16 @@ const clickDocument = async function ({fromYear, toYear, documentTitle, canonica
         console.log('clicking element', i);
         await e.click();
     }
-    await page.waitForNavigation({waitUntil: 'networkidle0'}).catch(e => {
+    await page.waitForNavigation({ waitUntil: 'networkidle0' }).catch(e => {
         // console.error('Network IDLE did not happen');
     });
     if (pdf_url) {
-        let responsePage = await fetchPage({canonicalURL, requestURL: pdf_url, headers});
+        let responsePage = await fetchPage({ canonicalURL, requestURL: pdf_url, headers });
         return responsePage;
-    } else throw('PDF_URL not yet found');
+    } else throw ('PDF_URL not yet found');
 };
 
-async function fetchURL({canonicalURL, headers}) {
+async function fetchURL({ canonicalURL, headers }) {
     if (/https?:.*https?:/i.test(canonicalURL)) {
         console.error("Rejecting URL", canonicalURL, `returning [];`);
         return [];
@@ -293,15 +302,15 @@ async function fetchURL({canonicalURL, headers}) {
     if (match) {
         let fromYear = parseInt(match[2]);
         let toYear = parseInt(match[4]);
-        await puppeteerSearch({fromYear, toYear, canonicalURL});
+        await puppeteerSearch({ fromYear, toYear, canonicalURL });
     } else if (docMatch) {
         let fromYear = parseInt(docMatch[2]);
         let toYear = parseInt(docMatch[4]);
         let documentTitle = decodeURIComponent(docMatch[5]);
-        await clickDocument({fromYear, toYear, documentTitle, headers, canonicalURL});
+        await clickDocument({ fromYear, toYear, documentTitle, headers, canonicalURL });
     } else {
         // return defaultFetchURL({canonicalURL, headers});
-        throw('UnRecogonized URL' + canonicalURL);
+        throw ('UnRecogonized URL' + canonicalURL);
     }
 }
 
@@ -309,5 +318,5 @@ async function fetchURL({canonicalURL, headers}) {
 (async function () {
     let canonicalURL = 'https://www.tca.gub.uy/tcawww/servlet/fallos/fallointereses?fromYear=2017&toYear=2018&documentTitle=Sentencia 152/2017';
     let headers = {};
-    let res = await fetchURL({canonicalURL, headers});
+    let res = await fetchURL({ canonicalURL, headers });
 })()
