@@ -19,7 +19,7 @@ import { newPage, getBrowser } from '../../utils/crawling/PuppeteerManager.js';
 // const fetcher = require("../../utils/fetcher");
 import { fetchWithCookies, defaultFetchURL } from '../../utils/fetcher.js'
 // let fetchWithCookies = fetcher.fetchWithCookies;
-// // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
+ // let fetch = fetcher.fetch;//only use fetchWithCookies or defaultFetchURL for Tests
 // let defaultFetchURL = fetcher.defaultFetchURL;
 
 
