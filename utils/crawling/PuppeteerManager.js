@@ -40,14 +40,14 @@ const init = async function () {
     browser = await puppeteer.launch(options);
 };
 
-exports.newPage = async () => {
+export const newPage = async () => {
     await init();
     const page = await browser.newPage();
     // await page.authenticate({username: "lum-customer-vlex-zone-g1-country-us", password: "003c65247594"});
     return page;
 };
 
-exports.getBrowser = async () => {
+export const getBrowser = async () => {
     if (!browser)
         return await init();
     return browser;
